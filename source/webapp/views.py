@@ -23,31 +23,31 @@ class ProductCreateView(CreateView):
     success_url = reverse_lazy('webapp:index')
 
 
-class BasketChangeView(View):
+class BasketChangeView(View):                    #метод заполнения корзины
     def get(self, request, *args, **kwargs):
-        products = request.session.get('products', [])
+        products = request.session.get('products', [])   #если в корзине есть товар, находим товар, если пустая корзина, создаем новый список товаров
 
-        pk = request.GET.get('pk')
-        action = request.GET.get('action')
-        next_url = request.GET.get('next', reverse('webapp:index'))
+        pk = request.GET.get('pk')            # достаем ключ добавляемого товара
+        action = request.GET.get('action')       #добавляем из запроса действие(добавить или удалить товар)
+        next_url = request.GET.get('next', reverse('webapp:index'))        # находим ссылку куда перекинуть
 
-        if action == 'add':
+        if action == 'add':              #если добавить, добавляем
             products.append(pk)
         else:
-            for product_pk in products:
+            for product_pk in products:     #если нет , удаляем из списков товаров
                 if product_pk == pk:
                     products.remove(product_pk)
                     break
 
-        request.session['products'] = products
-        request.session['products_count'] = len(products)
+        request.session['products'] = products                  #обновляем список товаров
+        request.session['products_count'] = len(products)        #обновляем кол-во товаров
 
         return redirect(next_url)
 
 
-class BasketView(CreateView):
+class BasketView(CreateView):                                             #корзина
     model = Order
-    fields = ('first_name', 'last_name', 'phone', 'email')
+    fields = ('first_name', 'last_name', 'phone', 'email')    # так как нет formclass поля прописываем здесь
     template_name = 'product/basket.html'
     success_url = reverse_lazy('webapp:index')
 
@@ -66,7 +66,7 @@ class BasketView(CreateView):
         self._clean_basket()
         return response
 
-    def _prepare_basket(self):
+    def _prepare_basket(self):               #формирование корзины
         totals = self._get_totals()
         basket = []
         basket_total = 0
@@ -78,12 +78,12 @@ class BasketView(CreateView):
         return basket, basket_total
 
     def _get_totals(self):
-        products = self.request.session.get('products', [])
-        totals = {}
-        for product_pk in products:
-            if product_pk not in totals:
+        products = self.request.session.get('products', [])            #достаем список ключей товаров из сессии или пустой список, если корзина пустая
+        totals = {}                                      #группировка ключей по кол-вуб подсчитывается кол-во каждого ключа
+        for product_pk in products:                     # цикл проходитяс по всем ключам в списке ключей, и если ключ еще не учтен, заводит для него новую запись
+            if product_pk not in totals:              #в словаре totals со значением =0
                 totals[product_pk] = 0
-            totals[product_pk] += 1
+            totals[product_pk] += 1          #Значение этой записи увеличивается на 1 за каждый совпадающий ключ товара в списке
         return totals
 
     def _basket_empty(self):
