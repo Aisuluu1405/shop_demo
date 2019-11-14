@@ -1,8 +1,9 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import reverse, redirect
 
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import ListView, DetailView, CreateView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView
 from webapp.models import Product, OrderProduct, Order
 
 
@@ -16,11 +17,13 @@ class ProductView(DetailView):
     template_name = 'product/detail.html'
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(PermissionRequiredMixin, CreateView):
     model = Product
     template_name = 'product/create.html'
     fields = ('name', 'category', 'price', 'photo')
     success_url = reverse_lazy('webapp:index')
+    permission_required = 'webapp.add_product'
+    permission_denied_message = "Доступ запрещен"
 
 
 class BasketChangeView(View):                    #метод заполнения корзины
