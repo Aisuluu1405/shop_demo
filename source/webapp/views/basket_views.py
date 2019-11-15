@@ -1,4 +1,4 @@
-from django.shortcuts import reverse, redirect
+from django.shortcuts import reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView
@@ -13,8 +13,10 @@ class BasketChangeView(View):                    #метод заполнени�
         action = request.GET.get('action')       #добавляем из запроса действие(добавить или удалить товар)
         next_url = request.GET.get('next', reverse('webapp:index'))        # находим ссылку куда перекинуть
 
-        if action == 'add':              #если добавить, добавляем
-            products.append(pk)
+        if action == 'add':
+            product = get_object_or_404(Product, pk=pk)
+            if product.in_order:
+                products.append(pk)
         else:
             for product_pk in products:     #если нет , удаляем из списков товаров
                 if product_pk == pk:
