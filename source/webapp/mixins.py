@@ -1,5 +1,5 @@
 from datetime import datetime
-from django.views.generic import View
+
 
 # Пример:
 # 'page_visits': {

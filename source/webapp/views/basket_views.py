@@ -1,8 +1,9 @@
 from django.shortcuts import reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView, DetailView
 from webapp.models import Product, OrderProduct, Order
+from webapp.forms import BasketOrderCreateForm
 
 
 class BasketChangeView(View):                    #метод заполнения корзины
@@ -31,7 +32,7 @@ class BasketChangeView(View):                    #метод заполнени�
 
 class BasketView(CreateView):                                             #корзина
     model = Order
-    fields = ('first_name', 'last_name', 'phone', 'email')    # так как нет formclass поля прописываем здесь
+    form_class = BasketOrderCreateForm
     template_name = 'product/basket.html'
     success_url = reverse_lazy('webapp:index')
 
@@ -40,6 +41,11 @@ class BasketView(CreateView):                                             #ко�
         kwargs['basket'] = basket
         kwargs['basket_total'] = basket_total
         return super().get_context_data(**kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         if self._basket_empty():
@@ -56,6 +62,7 @@ class BasketView(CreateView):                                             #ко�
         basket_total = 0
         for pk, qty in totals.items():
             product = Product.objects.get(pk=int(pk))
+            print(product)
             total = product.price * qty
             basket_total += total
             basket.append({'product': product, 'qty': qty, 'total': total})
@@ -84,3 +91,4 @@ class BasketView(CreateView):                                             #ко�
             self.request.session.pop('products')
         if 'products_count' in self.request.session:
             self.request.session.pop('products_count')
+

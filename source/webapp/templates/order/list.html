@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1> Orders </h1>
+           <div class="container_index pt-5 pb-5">
+            <div class="row">
+                <div class="col-15">
+                    <table class="table">
+                        <thead>
+                        <tr class="table-dark text-dark">
+                            <th scope="col">First name</th>
+                            <th scope="col">Last name</th>
+                            <th scope="col">Phone</th>
+{#                            {% if request.user.is_authenticated %}#}
+{#                            <th scope="col"></th>#}
+{#                            {% endif %}#}
+                        </tr>
+                        </thead>
+                        {% for order in orders %}
+                            <tbody>
+                            <tr class="table-secondary">
+                                <td><a href="{% url 'webapp:order_detail' order.pk %}">{{ order.first_name }}</a></td>
+                                <td>{{ order.last_name }}</td>
+                                <td>{{ order.phone}}</td>
+{#                                {% if request.user.is_authenticated %}#}
+{#                                <td>#}
+{#                                   <p>#}
+{#                                       {% if perms.webapp.change_order %}#}
+{#                                            <a href="{% url 'webapp:order_delete' order.pk %}"><i class="fas fa-trash-alt"></i></a>#}
+{#                                       {% endif %}#}
+{#                                       {% if perms.webapp.change_order %}#}
+{#                                            <a href="{% url 'webapp:order_edit' order.pk %}"><i class="fas fa-edit"></i></a>#}
+{#                                       {% endif %}#}
+{#                                   </p>#}
+                                </td>
+{#                                {% endif %}#}
+                            </tr>
+                            </tbody>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+{% endblock %}
