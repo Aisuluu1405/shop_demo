@@ -28,6 +28,9 @@
 {#                <td>{{ order.total }}</td>#}
             </tr>
         {% endfor %}
+        {% if perms.webapp.change_order %}
+            <p><a href="{%  url 'webapp:order_delete' order.pk %}" >Отменить заказ </a></p>
+        {% endif %}
         </tbody>
         <tfoot>
         <tr>
