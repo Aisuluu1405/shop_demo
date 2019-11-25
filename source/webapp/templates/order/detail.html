@@ -45,7 +45,7 @@
     <h3 class="text-center my-3">Товары в заказе</h3>
     <p class="text-center">
 {#        {% if perms.webapp.add_orderproduct %}#}
-{#            <a href="{% url "webapp:order_add_product" order.pk %}">Добавить товар</a>#}
+            <a href="{% url "webapp:order_add_product" order.pk %}">Добавить товар</a>
 {#        {% endif %}#}
     </p>
     <table class="table table-striped">
