@@ -1,44 +1,56 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1> Orders </h1>
-           <div class="container_index pt-5 pb-5">
-            <div class="row">
-                <div class="col-15">
-                    <table class="table">
-                        <thead>
-                        <tr class="table-dark text-dark">
-                            <th scope="col">First name</th>
-                            <th scope="col">Last name</th>
-                            <th scope="col">Phone</th>
-{#                            {% if request.user.is_authenticated %}#}
-{#                            <th scope="col"></th>#}
-{#                            {% endif %}#}
-                        </tr>
-                        </thead>
-                        {% for order in orders %}
-                            <tbody>
-                            <tr class="table-secondary">
-                                <td><a href="{% url 'webapp:order_detail' order.pk %}">{{ order.first_name }}</a></td>
-                                <td>{{ order.last_name }}</td>
-                                <td>{{ order.phone}}</td>
-{#                                {% if request.user.is_authenticated %}#}
-{#                                <td>#}
-{#                                   <p>#}
-{#                                       {% if perms.webapp.change_order %}#}
-{#                                            <a href="{% url 'webapp:order_delete' order.pk %}"><i class="fas fa-trash-alt"></i></a>#}
-{#                                       {% endif %}#}
-{#                                       {% if perms.webapp.change_order %}#}
-{#                                            <a href="{% url 'webapp:order_edit' order.pk %}"><i class="fas fa-edit"></i></a>#}
-{#                                       {% endif %}#}
-{#                                   </p>#}
-                                </td>
-{#                                {% endif %}#}
-                            </tr>
-                            </tbody>
-                        {% endfor %}
-                    </table>
-                </div>
+    <h1 class="text-center mb-3">Заказы</h1>
+    {% for order in orders %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <p class="card-text text-right">{{ order.created_at|date:'Y-m-d H:i:s' }} ({{ order.get_status_display }})</p>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Имя:
+                    {% if order.first_name %}
+                        {{ order.first_name }}
+                    {% else %}
+                        {% if order.user %}
+                            {{ order.user.first_name }}
+                        {% endif %}
+                    {% endif %}
+                    {% if order.last_name %}
+                        {{ order.last_name }}
+                    {% else %}
+                        {% if order.user %}
+                            {{ order.user.last_name }}
+                        {% endif %}
+                    {% endif %}
+                </p>
+                <p class="card-text">
+                    Email:
+                    {% if order.email %}
+                        {{ order.email }}
+                    {% else %}
+                        {% if order.user.email %}
+                            {{ order.user.email }}
+                        {% endif %}
+                    {% endif %}
+                </p>
+                <p class="card-text">Телефон: {{ order.phone }}</p>
+            </div>
+            <div class="card-footer">
+                {% if perms.webapp.view_order or request.user == order.user %}
+                    <a class="card-link" href="{% url 'webapp:order_detail' order.pk %}">Просмотреть</a>
+                {% endif %}
+{#                {% if perms.webapp.change_order %}#}
+{#                    <a class="card-link" href="{% url 'webapp:order_update' order.pk %}">Изменить</a>#}
+{#                {% endif %}#}
+{#                {% if perms.webapp.deliver_order %}#}
+{#                    <a class="card-link" href="{% url 'webapp:order_deliver' order.pk %}">Доставить</a>#}
+{#                {% endif %}#}
+{#                {% if perms.webapp.delete_order %}#}
+{#                    <a class="card-link" href="{% url 'webapp:order_cancel' order.pk %}">Отменить</a>#}
+{#                {% endif %}#}
             </div>
         </div>
+    {% endfor %}
 {% endblock %}

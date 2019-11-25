@@ -10,12 +10,13 @@ from webapp.models import Order, OrderProduct, Product
 
 class OrderListView(PermissionRequiredMixin, ListView):
     template_name = 'order/list.html'
+    model = Order
     context_object_name = 'orders'
     permission_required = 'webapp.view_order'
     permission_denied_message = 'Доступ запрещен!'
 
     def get_queryset(self):
-        if self.request.user.has_perm('webapp:view_order'):
+        if self.request.user.has_perm('webapp.view_order'):
             return Order.objects.all().order_by('-created_at')
         return self.request.user.orders.all().order_by('-created_at')
 
