@@ -1,14 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Товары{% endblock %}
-{% block menu %}
-    {% if perms.webapp.add_product %}
-        <li class="nav-item"><a href="{% url 'webapp:product_create' %}" class="nav-link">Добавить товар</a></li>
-    {% endif %}
-    {% if perms.webapp.view_order %}
-        <li class="nav-item"><a href="{% url 'webapp:order' %}" class="nav-link">Список заказов</a></li>
-    {% endif %}
-{% endblock %}
+
 {% block content %}
     <h1 class="text-center">Товары</h1>
     <div class="row">

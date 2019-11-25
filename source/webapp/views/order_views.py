@@ -1,8 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 
+from webapp.forms import ManualOrderForm
 from webapp.mixins import StatsMixin
 from webapp.models import Order, OrderProduct, Product
 
@@ -17,6 +18,17 @@ class OrderListView(PermissionRequiredMixin, ListView):
         if self.request.user.has_perm('webapp:view_order'):
             return Order.objects.all().order_by('-created_at')
         return self.request.user.orders.all().order_by('-created_at')
+
+
+class OrderCreateView(PermissionRequiredMixin, CreateView):
+    model = Order
+    form_class = ManualOrderForm
+    template_name = 'order/create.html'
+    permission_required = 'webapp.add_order'
+
+    def get_success_url(self):
+        return reverse('webapp:order_detail', kwargs={'pk': self.object.pk})
+
 
 
 class OrderDetailView(PermissionRequiredMixin, DetailView):
@@ -45,7 +57,3 @@ class OrderDeleteView(PermissionRequiredMixin, StatsMixin, DeleteView):
         order.status ='canceled'
         order.save()
         return HttpResponseRedirect(self.get_success_url())
-
-class OrderCreateView(CreateView):
-    model = Order
-
