@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
 {% block menu %}
-    {% if perms.webapp.change_order %}
+{#    {% if perms.webapp.change_order %}#}
         <li class="nav-item"><a class="nav-link" href="{% url 'webapp:order_update' order.pk %}">Изменить</a></li>
-    {% endif %}
+{#    {% endif %}#}
 {#    {% if perms.webapp.deliver_order %}#}
-{#        <li class="nav-item"><a class="nav-link" href="{% url 'webapp:order_deliver' order.pk %}">Доставить</a></li>#}
+        <li class="nav-item"><a class="nav-link" href="{% url 'webapp:order_deliver' order.pk %}">Доставить</a></li>
 {#    {% endif %}#}
 {#    {% if perms.webapp.delete_order %}#}
-{#        <li class="nav-item"><a class="nav-link" href="{% url 'webapp:order_cancel' order.pk %}">Отменить</a></li>#}
+        <li class="nav-item"><a class="nav-link" href="{% url 'webapp:order_cancel' order.pk %}">Отменить</a></li>
 {#    {% endif %}#}
 {% endblock %}
 
@@ -66,14 +66,14 @@
                 <td>{{ item.amount }}</td>
                 <td>{{ item.get_total|floatformat:2 }}</td>
                 <td>
-                    {% if perms.webapp.change_orderproduct %}
-                        <a href="{% url 'webapp:order_product_update' item.pk %}">Редактировать</a>
-                    {% endif %}
+{#                    {% if perms.webapp.change_orderproduct %}#}
+{#                        <a href="{% url 'webapp:order_product_update' item.pk %}">Редактировать</a>#}
+{#                    {% endif %}#}
                 </td>
                 <td>
-                    {% if perms.webapp.delete_orderproduct %}
-                        <a href="{% url 'webapp:order_product_delete' item.pk %}">Удалить</a>
-                    {% endif %}
+{#                    {% if perms.webapp.delete_orderproduct %}#}
+{#                        <a href="{% url 'webapp:order_product_delete' item.pk %}">Удалить</a>#}
+{#                    {% endif %}#}
                 </td>
             </tr>
         {% endfor %}

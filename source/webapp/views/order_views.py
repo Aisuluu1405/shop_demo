@@ -1,11 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
+from django.views.generic.base import View
 
 from webapp.forms import ManualOrderForm
 from webapp.mixins import StatsMixin
-from webapp.models import Order, OrderProduct, Product
+from webapp.models import Order, OrderProduct, Product, ORDER_STATUS_DELIVERED, ORDER_STATUS_CANCELED
 
 
 class OrderListView(LoginRequiredMixin, ListView):
@@ -52,17 +54,21 @@ class OrderUpdateView(PermissionRequiredMixin, UpdateView):
         return reverse('webapp:order_detail', kwargs={'pk': self.object.pk})
 
 
+class OrderDeliverView(PermissionRequiredMixin, View):
+    permission_required = 'webapp.deliver_order'
 
-class OrderDeleteView(PermissionRequiredMixin, StatsMixin, DeleteView):
-    model = Order
-    template_name = 'order/delete.html'
-    success_url = reverse_lazy('webapp:order_detail')
-    context_object_name = 'product'
-    permission_required = 'webapp.change_order'
-    permission_denied_message = 'Доступ запрещен!'
-
-    def delete(self, request, *args, **kwargs):
-        order = self.object = self.get_object()
-        order.status ='canceled'
+    def get(self, request, *args, **kwargs):
+        order = get_object_or_404(Order, pk=kwargs.get('pk'))
+        order.status = ORDER_STATUS_DELIVERED
         order.save()
-        return HttpResponseRedirect(self.get_success_url())
+        return redirect('webapp:order')
+
+
+class OrderCancelView(PermissionRequiredMixin, View):
+    permission_required = 'webapp.delete_order'
+
+    def get(self, request, *args, **kwargs):
+        order = get_object_or_404(Order, pk=kwargs.get('pk'))
+        order.status = ORDER_STATUS_CANCELED
+        order.save()
+        return redirect('webapp:order')
