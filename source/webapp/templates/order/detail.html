@@ -67,7 +67,7 @@
                 <td>{{ item.get_total|floatformat:2 }}</td>
                 <td>
 {#                    {% if perms.webapp.change_orderproduct %}#}
-{#                        <a href="{% url 'webapp:order_product_update' item.pk %}">Редактировать</a>#}
+                        <a href="{% url 'webapp:order_product_update' item.pk %}">Редактировать</a>
 {#                    {% endif %}#}
                 </td>
                 <td>

@@ -93,3 +93,14 @@ class OrderProductCreateView(PermissionRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse('webapp:order_detail', kwargs={'pk': self.object.order.pk})
+
+
+class OrderProductUpdateView(PermissionRequiredMixin, UpdateView):
+    model = OrderProduct
+    form_class = OrderProductForm
+    context_object_name = 'order_product'
+    template_name = 'order_product/update.html'
+    permission_required = 'webapp.change_orderproduct'
+
+    def get_success_url(self):
+        return reverse('webapp:order_detail', kwargs={'pk': self.object.order.pk})
