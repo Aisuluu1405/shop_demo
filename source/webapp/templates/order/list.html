@@ -41,15 +41,15 @@
                 {% if perms.webapp.view_order or request.user == order.user %}
                     <a class="card-link" href="{% url 'webapp:order_detail' order.pk %}">Просмотреть</a>
                 {% endif %}
-{#                {% if perms.webapp.change_order %}#}
-{#                    <a class="card-link" href="{% url 'webapp:order_update' order.pk %}">Изменить</a>#}
-{#                {% endif %}#}
-{#                {% if perms.webapp.deliver_order %}#}
-{#                    <a class="card-link" href="{% url 'webapp:order_deliver' order.pk %}">Доставить</a>#}
-{#                {% endif %}#}
-{#                {% if perms.webapp.delete_order %}#}
-{#                    <a class="card-link" href="{% url 'webapp:order_cancel' order.pk %}">Отменить</a>#}
-{#                {% endif %}#}
+                {% if perms.webapp.change_order %}
+                    <a class="card-link" href="{% url 'webapp:order_update' order.pk %}">Изменить</a>
+                {% endif %}
+                {% if perms.webapp.deliver_order %}
+                    <a class="card-link" href="{% url 'webapp:order_deliver' order.pk %}">Доставить</a>
+                {% endif %}
+                {% if perms.webapp.delete_order %}
+                    <a class="card-link" href="{% url 'webapp:order_cancel' order.pk %}">Отменить</a>
+                {% endif %}
             </div>
         </div>
     {% endfor %}

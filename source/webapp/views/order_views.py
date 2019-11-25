@@ -1,16 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.views.generic.base import View
-
-from webapp.forms import ManualOrderForm, OrderProductForm
 from webapp.mixins import StatsMixin
-from webapp.models import Order, OrderProduct, Product, ORDER_STATUS_DELIVERED, ORDER_STATUS_CANCELED
+from webapp.forms import ManualOrderForm, OrderProductForm
+from webapp.models import Order, OrderProduct, ORDER_STATUS_DELIVERED, ORDER_STATUS_CANCELED
 
 
-class OrderListView(LoginRequiredMixin, ListView):
+class OrderListView(LoginRequiredMixin, StatsMixin, ListView):
     template_name = 'order/list.html'
     model = Order
     context_object_name = 'orders'
@@ -21,7 +19,7 @@ class OrderListView(LoginRequiredMixin, ListView):
         return self.request.user.orders.all().order_by('-created_at')
 
 
-class OrderCreateView(PermissionRequiredMixin, CreateView):
+class OrderCreateView(PermissionRequiredMixin, StatsMixin, CreateView):
     model = Order
     form_class = ManualOrderForm
     template_name = 'order/create.html'
@@ -31,7 +29,7 @@ class OrderCreateView(PermissionRequiredMixin, CreateView):
         return reverse('webapp:order_detail', kwargs={'pk': self.object.pk})
 
 
-class OrderDetailView(LoginRequiredMixin, DetailView):
+class OrderDetailView(LoginRequiredMixin, StatsMixin, DetailView):
     model = Order
     template_name = 'order/detail.html'
     context_object_name = 'order'
@@ -42,7 +40,7 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
         return self.request.user.orders.all()
 
 
-class OrderUpdateView(PermissionRequiredMixin, UpdateView):
+class OrderUpdateView(PermissionRequiredMixin, StatsMixin, UpdateView):
     model = Order
     pass
     form_class = ManualOrderForm
@@ -74,7 +72,7 @@ class OrderCancelView(PermissionRequiredMixin, View):
         return redirect('webapp:order')
 
 
-class OrderProductCreateView(PermissionRequiredMixin, CreateView):
+class OrderProductCreateView(PermissionRequiredMixin, StatsMixin, CreateView):
     model = OrderProduct
     form_class = OrderProductForm
     template_name = 'order_product/create.html'
@@ -95,12 +93,23 @@ class OrderProductCreateView(PermissionRequiredMixin, CreateView):
         return reverse('webapp:order_detail', kwargs={'pk': self.object.order.pk})
 
 
-class OrderProductUpdateView(PermissionRequiredMixin, UpdateView):
+class OrderProductUpdateView(PermissionRequiredMixin, StatsMixin, UpdateView):
     model = OrderProduct
     form_class = OrderProductForm
     context_object_name = 'order_product'
     template_name = 'order_product/update.html'
     permission_required = 'webapp.change_orderproduct'
+
+    def get_success_url(self):
+        return reverse('webapp:order_detail', kwargs={'pk': self.object.order.pk})
+
+
+class OrderProductDeleteView(PermissionRequiredMixin, StatsMixin, DeleteView):
+    model = OrderProduct
+    pass
+    template_name = 'order_product/delete.html'
+    context_object_name = 'order_product'
+    permission_required = 'webapp.delete_orderproduct'
 
     def get_success_url(self):
         return reverse('webapp:order_detail', kwargs={'pk': self.object.order.pk})

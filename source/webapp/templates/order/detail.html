@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
 {% block menu %}
-{#    {% if perms.webapp.change_order %}#}
+    {% if perms.webapp.change_order %}
         <li class="nav-item"><a class="nav-link" href="{% url 'webapp:order_update' order.pk %}">Изменить</a></li>
-{#    {% endif %}#}
-{#    {% if perms.webapp.deliver_order %}#}
+    {% endif %}
+    {% if perms.webapp.deliver_order %}
         <li class="nav-item"><a class="nav-link" href="{% url 'webapp:order_deliver' order.pk %}">Доставить</a></li>
-{#    {% endif %}#}
-{#    {% if perms.webapp.delete_order %}#}
+    {% endif %}
+    {% if perms.webapp.delete_order %}
         <li class="nav-item"><a class="nav-link" href="{% url 'webapp:order_cancel' order.pk %}">Отменить</a></li>
-{#    {% endif %}#}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -44,9 +44,9 @@
     <p>Телефон: {{ order.phone }}</p>
     <h3 class="text-center my-3">Товары в заказе</h3>
     <p class="text-center">
-{#        {% if perms.webapp.add_orderproduct %}#}
+        {% if perms.webapp.add_orderproduct %}
             <a href="{% url "webapp:order_add_product" order.pk %}">Добавить товар</a>
-{#        {% endif %}#}
+        {% endif %}
     </p>
     <table class="table table-striped">
         <thead>
@@ -66,14 +66,14 @@
                 <td>{{ item.amount }}</td>
                 <td>{{ item.get_total|floatformat:2 }}</td>
                 <td>
-{#                    {% if perms.webapp.change_orderproduct %}#}
+                    {% if perms.webapp.change_orderproduct %}
                         <a href="{% url 'webapp:order_product_update' item.pk %}">Редактировать</a>
-{#                    {% endif %}#}
+                    {% endif %}
                 </td>
                 <td>
-{#                    {% if perms.webapp.delete_orderproduct %}#}
-{#                        <a href="{% url 'webapp:order_product_delete' item.pk %}">Удалить</a>#}
-{#                    {% endif %}#}
+                    {% if perms.webapp.delete_orderproduct %}
+                        <a href="{% url 'webapp:order_product_delete' item.pk %}">Удалить</a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}
