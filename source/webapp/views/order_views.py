@@ -1,19 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, DetailView, CreateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 
 from webapp.forms import ManualOrderForm
 from webapp.mixins import StatsMixin
 from webapp.models import Order, OrderProduct, Product
 
 
-class OrderListView(PermissionRequiredMixin, ListView):
+class OrderListView(LoginRequiredMixin, ListView):
     template_name = 'order/list.html'
     model = Order
     context_object_name = 'orders'
-    permission_required = 'webapp.view_order'
-    permission_denied_message = 'Доступ запрещен!'
 
     def get_queryset(self):
         if self.request.user.has_perm('webapp.view_order'):
@@ -31,18 +29,28 @@ class OrderCreateView(PermissionRequiredMixin, CreateView):
         return reverse('webapp:order_detail', kwargs={'pk': self.object.pk})
 
 
-
-class OrderDetailView(PermissionRequiredMixin, DetailView):
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    model = Order
     template_name = 'order/detail.html'
     context_object_name = 'order'
-    permission_required = 'webapp.view_order'
-    permission_denied_message = 'Доступ запрещен!'
-
 
     def get_queryset(self):
         if self.request.user.has_perm('webapp:view_order'):
             return Order.objects.all().order_by('-created_at')
         return self.request.user.orders.all()
+
+
+class OrderUpdateView(PermissionRequiredMixin, UpdateView):
+    model = Order
+    pass
+    form_class = ManualOrderForm
+    template_name = 'order/update.html'
+    context_object_name = 'order'
+    permission_required = 'webapp.change_order'
+
+    def get_success_url(self):
+        return reverse('webapp:order_detail', kwargs={'pk': self.object.pk})
+
 
 
 class OrderDeleteView(PermissionRequiredMixin, StatsMixin, DeleteView):
