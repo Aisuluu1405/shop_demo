@@ -1,11 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.views.generic.base import View
 from webapp.mixins import StatsMixin
-from webapp.forms import ManualOrderForm, OrderProductForm
-from webapp.models import Order, OrderProduct, ORDER_STATUS_DELIVERED, ORDER_STATUS_CANCELED
+from webapp.forms import ManualOrderForm, OrderProductForm, ProductsFormset
+from webapp.models import Order, OrderProduct, ORDER_STATUS_DELIVERED, ORDER_STATUS_CANCELED, Product
 
 
 class OrderListView(LoginRequiredMixin, StatsMixin, ListView):
@@ -24,6 +25,29 @@ class OrderCreateView(PermissionRequiredMixin, StatsMixin, CreateView):
     form_class = ManualOrderForm
     template_name = 'order/create.html'
     permission_required = 'webapp.add_order'
+
+    def get_context_data(self, **kwargs):
+        if 'formset' not in kwargs:
+            kwargs['formset'] = ProductsFormset()
+        kwargs['product_list'] = Product.objects.filter(in_order=True)
+        return super().get_context_data(**kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form = self.get_form()
+        formset = ProductsFormset(data=request.POST)
+        if form.is_valid() and formset.is_valid():
+            return self.form_valid(form, formset)
+        return self.form_invalid(form, formset)
+
+    def form_valid(self, form, formset):
+        self.object = form.save()
+        formset.instance = self.object
+        formset.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form, formset):
+        return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
     def get_success_url(self):
         return reverse('webapp:order_detail', kwargs={'pk': self.object.pk})

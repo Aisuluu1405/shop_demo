@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm
+from django.forms import ModelForm, inlineformset_factory
 
 from webapp.models import Order, OrderProduct
 
@@ -56,3 +56,6 @@ class OrderProductForm(ModelForm):
     class Meta:
         model = OrderProduct
         fields = ['product', 'amount']
+
+ProductsFormset = inlineformset_factory(Order, OrderProduct, OrderProductForm, extra=0,
+                                        validate_min=True, min_num=1, can_delete=True)
