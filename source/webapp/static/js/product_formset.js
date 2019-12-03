@@ -1,5 +1,5 @@
-function setFormId(form, number) {
-    let formId = 'order_products-' + number;
+function setFormId(form, formsNumber) {
+    let formId = 'order_products-' + formsNumber;
     let oldId = form.prop('id');
     form.prop('id', formId);
 
@@ -12,11 +12,12 @@ function setFormId(form, number) {
     });
 
     let deleteButton = form.find('.btn-danger');
-    deleteButton.data('id', '#' + formId);
+    deleteButton.data('id', formId);
 }
 
 function formReset(form) {
     let formId = form.prop('id');
+    form.removeClass('d-none');
 
     let fields = ['product', 'amount', 'id'];
     fields.forEach(function(field) {
@@ -59,7 +60,8 @@ function deleteProductForm(event) {
         alert('В заказе должно быть хотя бы ' + minForms + " товар(а/ов).");
     } else {
         let formId = $(event.target).data('id');
-        let form = $(formId);
+        let form = $("#" + formId);
+
 
 
         let idInput = form.find('#id_' + formId + '-id');
@@ -69,9 +71,8 @@ function deleteProductForm(event) {
             deleteCheckbox.prop('checked', true);
         } else {
             form.remove();
+            totalFormsInput.val(parseInt(totalForms) - 1);
         }
-
-        totalFormsInput.val(parseInt(totalForms) - 1);
 
         let forms = $("#product_forms .form-row");
         for(let i = 0; i < forms.length; i++) {

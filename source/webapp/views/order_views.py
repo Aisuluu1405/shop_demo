@@ -72,6 +72,27 @@ class OrderUpdateView(PermissionRequiredMixin, StatsMixin, UpdateView):
     context_object_name = 'order'
     permission_required = 'webapp.change_order'
 
+    def get_context_data(self, **kwargs):
+        if 'formset' not in kwargs:
+            kwargs['formset'] = ProductsFormset(instance=self.object)
+        return super().get_context_data(**kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        formset = ProductsFormset(instance=self.object, data=request.POST)
+        if form.is_valid() and formset.is_valid():
+            return self.form_valid(form, formset)
+        return self.form_invalid(form, formset)
+
+    def form_valid(self, form, formset):
+        self.object = form.save()
+        formset.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form, formset):
+        return self.render_to_response(self.get_context_data(form=form, formset=formset))
+
     def get_success_url(self):
         return reverse('webapp:order_detail', kwargs={'pk': self.object.pk})
 
